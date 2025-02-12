@@ -21,3 +21,17 @@ Git.prototype.commit = function (message) {
   var commit = new Commit();
   return commit;
 };
+
+function Git() {
+  this.lastCommitId = -1;
+}
+
+Git.prototype.commit = function (message) {
+  var commit = new Commit(++this.lastCommitId, message);
+  return commit;
+};
+
+repo.commit("Make commit work");
+
+// Actual command:
+// > git commit -m "Make commit work"
