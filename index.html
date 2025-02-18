@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Build Git - Learn Git</title>
+    <script src="git.js"></script>
+  </head>
+  <body>
+    <script>
+      console.log("1. Git.log() test");
+      var repo = new Git("test");
+      repo.commit("Initial commit");
+      repo.commit("Change 1");
+
+      var log = repo.log();
+      console.assert(log.length === 2); // Deve ter 2 commits.
+      console.assert(!!log[0] && log[0].id === 1); // O commit 1 deve ser o primeiro.
+      console.assert(!!log[1] && log[1].id === 0); // E então confirme 0.
+
+      console.log("2. Git.checkout() test");
+      var repo = new Git("test");
+      repo.commit("Initial commit");
+
+      console.assert(repo.HEAD.name === "master"); // Deve estar no branch master.
+      repo.checkout("testing");
+      console.assert(repo.HEAD.name === "testing"); // Deve estar em um novo branch de testes.
+      repo.checkout("master");
+      console.assert(repo.HEAD.name === "master"); // Deve estar no branch master.
+      repo.checkout("testing");
+      console.assert(repo.HEAD.name === "testing"); // Deve estar em um novo branch de testes de novo.
+      console.log("3. Branches test");
+      var repo = new Git("test");
+      repo.commit("Initial commit");
+      repo.commit("Change 1");
+
+      // Mapeia a matriz de commits em uma sequência de IDs de commit.
+      // Para [C2, C1,C3], retorna "2-1-0"
+      function historyToIdMapper(history) {
+        var ids = history.map(function (commit) {
+          return commit.id;
+        });
+        return ids.join("-");
+      }
+
+      console.assert(historyToIdMapper(repo.log()) === "1-0"); // Deve mostrar 2 commits.
+
+      repo.checkout("testing");
+      repo.commit("Change 2");
+
+      console.assert(historyToIdMapper(repo.log()) === "2-1-0"); // Deve mostrar 3 commits.
+
+      repo.checkout("master");
+      console.assert(historyToIdMapper(repo.log()) === "1-0"); // Deve mostrar 2 commits. Mestre não poluído.
+
+      repo.commit("Change 3");
+      console.assert(historyToIdMapper(repo.log()) === "3-1-0"); // Continue no master com o 4º commit.
+    </script>
+  </body>
+</html>
